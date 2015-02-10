@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="org.qodra.mapper.ClassificationMapper">
+
+    <resultMap type='User' id='UserResult'>
+        <id property='id' column='user_id'/>
+        <result property='username' column='username'/>
+        <result property='email' column='email'/>
+        <result property='password' column='password'/>
+    </resultMap>
+
+    <resultMap type='Media' id='MediaResult'>
+        <id property='id' column='media_id'/>
+        <result property='title' column='title'/>
+        <result property='path' column='path'/>
+    </resultMap>
+
+    <resultMap type='Classification' id='ClassificationResult'>
+        <id property='id' column='id'/>
+        <id property='tag' column='tag'/>
+        <id property='classification' column='classification'/>
+        <id property='origin' column='origin'/>
+        <association property='user' resultMap='UserResult'/>
+        <association property='media' resultMap='MediaResult'/>
+    </resultMap>
+
+    <select id="getById" parameterType="string" resultMap="ClassificationResult">
+        SELECT * FROM classification WHERE id = #{id} order by tag
+    </select>
+
+    <select id="getClassificationByMediaAndUser" parameterType="string" resultMap="ClassificationResult">
+        SELECT * FROM classification WHERE media_id = #{media.id} and user_id = #{user.id} order by tag
+    </select>
+
+    <insert id="addClassification" parameterType="Classification">
+        INSERT INTO classification(id, user_id, media_id, tag, classification, origin)
+                values(#{id}, #{user.id}, #{media.id}, #{tag}, #{classification}, #{origin})
+    </insert>
+
+    <delete id="deleteClassification" parameterType="String">
+        delete from classification where id =#{id}
+    </delete>
+
+</mapper>

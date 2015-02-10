@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>qodra-panel</artifactId>
+        <groupId>qodra-panel</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>rest</artifactId>
+    <packaging>war</packaging>
+    <name>qodra-panel-rest</name>
+
+    <properties>
+        <template.markdown>https://raw.githubusercontent.com/sandroacoelho/swagger/master/markdown.mustache
+        </template.markdown>
+        <template.html.mustache>https://raw.githubusercontent.com/sandroacoelho/swagger/master/strapdown.html.mustache
+        </template.html.mustache>
+    </properties>
+
+    <build>
+        <finalName>qodra-rest</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceDirectory>src/web</warSourceDirectory>
+                    <webXml>src/web/WEB-INF/web.xml</webXml>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <packagingExcludes>
+                        WEB-INF/lib/backport-util-concurrent*.jar,
+                        WEB-INF/lib/jersey-client-1.13.jar,
+                        WEB-INF/lib/jersey-core-1.13.jar,
+                        WEB-INF/lib/jersey-server-1.13.jar,
+                        WEB-INF/lib/jersey-servlet-1.13.jar,
+                        WEB-INF/lib/swagger*.jar,
+                        WEB-INF/lib/scala*.jar,
+                        WEB-INF/lib/lucene*.jar,
+                        WEB-INF/lib/maven*.jar,
+                    </packagingExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <configuration>
+                            <target name="get markdown.mustache">
+                                <get dest="/tmp">
+                                    <url url="${template.markdown}"/>
+                                </get>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <locations>org.qodra</locations>
+                            <apiVersion>v1</apiVersion>
+                            <basePath>rest</basePath>
+                            <outputTemplate>
+                                /tmp/markdown.mustache
+                            </outputTemplate>
+                            <outputPath>/tmp/generated/strapdown.html</outputPath>
+                            <outputPath>/tmp/generated/strapdown.html</outputPath>
+                            <swaggerDirectory>rest/target/qodra-rest/docs</swaggerDirectory>
+                            <swaggerUIDocBasePath>docs</swaggerUIDocBasePath>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+            <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+            <!-- artifactId>jersey-container-servlet</artifactId -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kongchen</groupId>
+            <artifactId>swagger-maven-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>qodra-panel</groupId>
+            <artifactId>model</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
